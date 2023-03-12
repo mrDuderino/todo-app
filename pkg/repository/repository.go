@@ -2,11 +2,12 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/mrDuderino/todo-app"
+	"github.com/mrDuderino/todo-app/models"
 )
 
 type Authorization interface {
-	CreateUser(user todo.User) (int, error)
+	CreateUser(user models.User) (int, error)
+	GetUser(userName, password string) (models.User, error)
 }
 
 type TodoList interface {

@@ -1,14 +1,14 @@
 package handler
 
 import (
+	"github.com/mrDuderino/todo-app/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mrDuderino/todo-app"
 )
 
 func (h *Handler) signUp(ctx *gin.Context) {
-	var input todo.User
+	var input models.User
 	if err := ctx.BindJSON(&input); err != nil {
 		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
@@ -23,6 +23,23 @@ func (h *Handler) signUp(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, map[string]interface{}{"id": id})
 }
 
-func (h *Handler) signIn(c *gin.Context) {
+type signInInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
 
+func (h *Handler) signIn(ctx *gin.Context) {
+	var input signInInput
+	if err := ctx.BindJSON(&input); err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, map[string]interface{}{"token": token})
 }
