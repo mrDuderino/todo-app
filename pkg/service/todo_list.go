@@ -24,3 +24,14 @@ func (tls *TodoListService) GetAll(userId int) ([]models.TodoList, error) {
 func (tls *TodoListService) GetById(userId, listId int) (models.TodoList, error) {
 	return tls.repo.GetById(userId, listId)
 }
+
+func (tls *TodoListService) Update(userId int, listId int, input models.UpdateListInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	return tls.repo.Update(userId, listId, input)
+}
+
+func (tls *TodoListService) Delete(userId, listId int) error {
+	return tls.repo.Delete(userId, listId)
+}

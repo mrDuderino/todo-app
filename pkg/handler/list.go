@@ -69,9 +69,48 @@ func (h *Handler) getListById(ctx *gin.Context) {
 }
 
 func (h *Handler) updateList(ctx *gin.Context) {
+	userId, err := getUserId(ctx)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		return
+	}
+	var input models.UpdateListInput
+	if err := ctx.BindJSON(&input); err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.Update(userId, id, input)
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, statusResponse{Status: "ok"})
 }
 
 func (h *Handler) deleteList(ctx *gin.Context) {
+	userId, err := getUserId(ctx)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	err = h.services.Delete(userId, id)
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, statusResponse{Status: "ok"})
 }
