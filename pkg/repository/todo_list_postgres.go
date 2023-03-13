@@ -37,3 +37,17 @@ func (tlp *TodoListPostgres) CreateList(userId int, list models.TodoList) (int, 
 
 	return id, tx.Commit()
 }
+
+func (tlp *TodoListPostgres) GetAll(userId int) ([]models.TodoList, error) {
+	var lists []models.TodoList
+	todoListsQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1", todoListsTable, usersListsTable)
+	err := tlp.db.Select(&lists, todoListsQuery, userId)
+	return lists, err
+}
+
+func (tlp *TodoListPostgres) GetById(userId, listId int) (models.TodoList, error) {
+	var list models.TodoList
+	todoListQuery := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND tl.id = $2", todoListsTable, usersListsTable)
+	err := tlp.db.Get(&list, todoListQuery, userId, listId)
+	return list, err
+}
