@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/mrDuderino/todo-app/models"
+	"github.com/sirupsen/logrus"
+	"strings"
 )
 
 type TodoItemPostgres struct {
@@ -51,6 +53,40 @@ func (tip *TodoItemPostgres) GetById(userId, itemId int) (models.TodoItem, error
              INNER JOIN %s ul ON li.list_id = ul.list_id WHERE ti.id = $1 AND ul.user_id = $2`, todoItemsTable, listsItemsTable, usersListsTable)
 	err := tip.db.Get(&item, query, itemId, userId)
 	return item, err
+}
+
+func (tip *TodoItemPostgres) Update(userId, itemId int, input models.UpdateItemInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.Title != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		args = append(args, *input.Title)
+		argId++
+	}
+	if input.Description != nil {
+		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
+		args = append(args, *input.Description)
+		argId++
+	}
+	if input.Done != nil {
+		setValues = append(setValues, fmt.Sprintf("done=$%d", argId))
+		args = append(args, *input.Done)
+		argId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`UPDATE %s ti SET %s FROM %s li, %s ul 
+                    WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ti.id = $%d AND ul.user_id = $%d`,
+		todoItemsTable, setQuery, listsItemsTable, usersListsTable, argId, argId+1)
+	args = append(args, itemId, userId)
+
+	logrus.Debugf("update query: %s", query)
+	logrus.Debugf("args: %s", args)
+
+	_, err := tip.db.Exec(query, args...)
+	return err
 }
 
 func (tip *TodoItemPostgres) Delete(userId, itemId int) error {

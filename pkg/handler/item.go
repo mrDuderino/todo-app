@@ -81,7 +81,29 @@ func (h *Handler) getItemById(ctx *gin.Context) {
 }
 
 func (h *Handler) updateItem(ctx *gin.Context) {
+	userId, err := getUserId(ctx)
+	if err != nil {
+		return
+	}
 
+	itemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		return
+	}
+	var input models.UpdateItemInput
+	if err := ctx.BindJSON(&input); err != nil {
+		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.TodoItem.Update(userId, itemId, input)
+	if err != nil {
+		NewErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, statusResponse{Status: "ok"})
 }
 
 func (h *Handler) deleteItem(ctx *gin.Context) {

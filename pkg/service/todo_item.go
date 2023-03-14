@@ -34,6 +34,13 @@ func (tis *TodoItemService) GetById(userId, itemId int) (models.TodoItem, error)
 	return tis.repo.GetById(userId, itemId)
 }
 
+func (tis *TodoItemService) Update(userId int, itemId int, input models.UpdateItemInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	return tis.repo.Update(userId, itemId, input)
+}
+
 func (tis *TodoItemService) Delete(userId, itemId int) error {
 	return tis.repo.Delete(userId, itemId)
 }
