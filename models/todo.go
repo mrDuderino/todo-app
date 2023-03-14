@@ -21,19 +21,6 @@ type TodoItem struct {
 	Done        bool   `json:"done" db:"done"`
 }
 
-type UpdateItemInput struct {
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Done        *bool   `json:"done"`
-}
-
-func (uii *UpdateItemInput) Validate() error {
-	if uii.Title == nil && uii.Description == nil && uii.Done == nil {
-		return errors.New("update structure has no values")
-	}
-	return nil
-}
-
 type ListsItem struct {
 	Id     int `db:"id"`
 	ListId int `db:"list_id"`
@@ -47,6 +34,19 @@ type UpdateListInput struct {
 
 func (uli *UpdateListInput) Validate() error {
 	if uli.Title == nil && uli.Description == nil {
+		return errors.New("update structure has no values")
+	}
+	return nil
+}
+
+type UpdateItemInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Done        *bool   `json:"done"`
+}
+
+func (uii *UpdateItemInput) Validate() error {
+	if uii.Title == nil && uii.Description == nil && uii.Done == nil {
 		return errors.New("update structure has no values")
 	}
 	return nil

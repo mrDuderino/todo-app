@@ -15,6 +15,13 @@ import (
 	"syscall"
 )
 
+// @title Todo App API
+// @description API Server for TodoList Application
+// @host localhost:8000
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
