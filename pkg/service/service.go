@@ -20,6 +20,8 @@ type TodoList interface {
 }
 
 type TodoItem interface {
+	CreateItem(userId int, listId int, item models.TodoItem) (int, error)
+	GetAllItems(userId, listId int) ([]models.TodoItem, error)
 }
 
 type Service struct {
@@ -32,5 +34,6 @@ func NewService(repos *repository.Repository) *Service { // dependency injection
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		TodoList:      NewTodoListService(repos.TodoList),
+		TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 	}
 }
