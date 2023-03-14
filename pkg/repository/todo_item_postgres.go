@@ -44,3 +44,11 @@ func (tip *TodoItemPostgres) GetAllItems(userId, listId int) ([]models.TodoItem,
 	err := tip.db.Select(&items, query, listId, userId)
 	return items, err
 }
+
+func (tip *TodoItemPostgres) GetById(userId, itemId int) (models.TodoItem, error) {
+	var item models.TodoItem
+	query := fmt.Sprintf(`SELECT ti.id, ti.title, ti.description, ti.done  FROM %s ti INNER JOIN %s li ON ti.id = li.item_id 
+             INNER JOIN %s ul ON li.list_id = ul.list_id WHERE ti.id = $1 AND ul.user_id = $2`, todoItemsTable, listsItemsTable, usersListsTable)
+	err := tip.db.Get(&item, query, itemId, userId)
+	return item, err
+}

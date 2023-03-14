@@ -29,3 +29,7 @@ func (tis *TodoItemService) CreateItem(userId int, listId int, item models.TodoI
 func (tis *TodoItemService) GetAllItems(userId int, listId int) ([]models.TodoItem, error) {
 	return tis.repo.GetAllItems(userId, listId)
 }
+
+func (tis *TodoItemService) GetById(userId, itemId int) (models.TodoItem, error) {
+	return tis.repo.GetById(userId, itemId)
+}
