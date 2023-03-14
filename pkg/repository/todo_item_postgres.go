@@ -52,3 +52,10 @@ func (tip *TodoItemPostgres) GetById(userId, itemId int) (models.TodoItem, error
 	err := tip.db.Get(&item, query, itemId, userId)
 	return item, err
 }
+
+func (tip *TodoItemPostgres) Delete(userId, itemId int) error {
+	query := fmt.Sprintf(`DELETE FROM %s ti USING %s li, %s ul 
+       WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ti.id = $1 AND ul.user_id = $2`, todoItemsTable, listsItemsTable, usersListsTable)
+	_, err := tip.db.Exec(query, itemId, userId)
+	return err
+}

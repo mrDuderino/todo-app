@@ -33,3 +33,7 @@ func (tis *TodoItemService) GetAllItems(userId int, listId int) ([]models.TodoIt
 func (tis *TodoItemService) GetById(userId, itemId int) (models.TodoItem, error) {
 	return tis.repo.GetById(userId, itemId)
 }
+
+func (tis *TodoItemService) Delete(userId, itemId int) error {
+	return tis.repo.Delete(userId, itemId)
+}
